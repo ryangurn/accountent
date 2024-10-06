@@ -64,7 +64,7 @@ func (a Address) ToString() string {
 
 func CreateAddress(c *cli.Context) error {
 	if c.NArg() != 6 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	// map args
@@ -107,7 +107,7 @@ func CreateAddress(c *cli.Context) error {
 
 func ReadAddress(c *cli.Context) error {
 	if c.NArg() != 1 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	db, err := data.OpenConnection()
@@ -172,7 +172,7 @@ func ListAddresses(c *cli.Context) error {
 
 func UpdateAddress(c *cli.Context) error {
 	if c.NArg() != 7 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	db, err := data.OpenConnection()
@@ -216,7 +216,7 @@ func UpdateAddress(c *cli.Context) error {
 
 func DeleteAddress(c *cli.Context) error {
 	if c.NArg() != 1 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	db, err := data.OpenConnection()

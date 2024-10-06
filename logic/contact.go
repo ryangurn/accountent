@@ -75,7 +75,7 @@ func (c Contact) ToString() string {
 
 func CreateContact(c *cli.Context) error {
 	if c.NArg() != 4 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	// map args
@@ -107,7 +107,7 @@ func CreateContact(c *cli.Context) error {
 
 func ReadContact(c *cli.Context) error {
 	if c.NArg() != 1 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	db, err := data.OpenConnection()
@@ -158,7 +158,7 @@ func ListContacts(c *cli.Context) error {
 
 func UpdateContact(c *cli.Context) error {
 	if c.NArg() != 5 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	db, err := data.OpenConnection()
@@ -197,7 +197,7 @@ func UpdateContact(c *cli.Context) error {
 
 func DeleteContact(c *cli.Context) error {
 	if c.NArg() != 1 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	db, err := data.OpenConnection()
@@ -232,7 +232,7 @@ func DeleteContact(c *cli.Context) error {
 
 func AddAddressToContact(c *cli.Context) error {
 	if c.NArg() != 2 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	db, err := data.OpenConnection()
@@ -261,7 +261,7 @@ func AddAddressToContact(c *cli.Context) error {
 
 func RemoveAddressFromContact(c *cli.Context) error {
 	if c.NArg() != 2 {
-		return fmt.Errorf("missing required arguments")
+		return fmt.Errorf("missing required arguments: " + c.Command.ArgsUsage)
 	}
 
 	db, err := data.OpenConnection()
