@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
-	"os"
 	"ryangurnick.com/accountant/data"
 	"ryangurnick.com/accountant/logic"
 )
@@ -26,12 +27,6 @@ func main() {
 		Suggest:              true,
 		Name:                 "accountant",
 		Usage:                "A CLI for managing your business",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "config",
-				Aliases: []string{"c"},
-			},
-		},
 		Commands: []*cli.Command{
 			{
 				Name:    "addresses",
