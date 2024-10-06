@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
@@ -45,7 +46,7 @@ func CreateContact(c *cli.Context) error {
 		Phone:     phone,
 	}
 
-	t := data.CreateTable(c, table.Row{"First Name", "Last Name", "Email", "Phone"}, []table.Row{table.Row{contact.FirstName, contact.LastName, contact.Email, contact.Phone}})
+	t := data.CreateTable(c, table.Row{"First Name", "Last Name", "Email", "Phone"}, []table.Row{{contact.FirstName, contact.LastName, contact.Email, contact.Phone}})
 	t.AppendFooter(table.Row{"Created", ""})
 	t.Render()
 
