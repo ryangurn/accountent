@@ -9,6 +9,57 @@ import (
 	"ryangurnick.com/accountant/data"
 )
 
+var ClientSubcommands = []*cli.Command{
+	{
+		Name:      "create",
+		Aliases:   []string{"c"},
+		Usage:     "Create a new client",
+		Action:    CreateClient,
+		ArgsUsage: "<name>",
+	},
+	{
+		Name:      "read",
+		Aliases:   []string{"r"},
+		Usage:     "Read a client",
+		Action:    ReadClient,
+		ArgsUsage: "<id>",
+	},
+	{
+		Name:    "list",
+		Aliases: []string{"l"},
+		Usage:   "List all client",
+		Action:  ListClients,
+	},
+	{
+		Name:      "update",
+		Aliases:   []string{"u"},
+		Usage:     "Update a client",
+		Action:    UpdateClient,
+		ArgsUsage: "<id> <name>",
+	},
+	{
+		Name:      "delete",
+		Aliases:   []string{"d"},
+		Usage:     "Delete a client",
+		Action:    DeleteClient,
+		ArgsUsage: "<id>",
+	},
+	{
+		Name:      "link-address",
+		Aliases:   []string{"la"},
+		Usage:     "Associate an address to a client",
+		Action:    AddAddressToClient,
+		ArgsUsage: "<client_id> <address_id>",
+	},
+	{
+		Name:      "unlink-address",
+		Aliases:   []string{"ua"},
+		Usage:     "Remove an address from a client",
+		Action:    RemoveAddressFromClient,
+		ArgsUsage: "<client_id> <address_id>",
+	},
+}
+
 type Client struct {
 	gorm.Model
 	Name      string

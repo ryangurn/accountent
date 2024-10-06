@@ -9,6 +9,57 @@ import (
 	"ryangurnick.com/accountant/data"
 )
 
+var ContactSubcommands = []*cli.Command{
+	{
+		Name:      "create",
+		Aliases:   []string{"c"},
+		Usage:     "Create a new contact",
+		Action:    CreateContact,
+		ArgsUsage: "<first_name> <last_name> <email> <phone>",
+	},
+	{
+		Name:      "read",
+		Aliases:   []string{"r"},
+		Usage:     "Read a contact",
+		Action:    ReadContact,
+		ArgsUsage: "<id>",
+	},
+	{
+		Name:    "list",
+		Aliases: []string{"l"},
+		Usage:   "List all contacts",
+		Action:  ListContacts,
+	},
+	{
+		Name:      "update",
+		Aliases:   []string{"u"},
+		Usage:     "Update a contact",
+		Action:    UpdateContact,
+		ArgsUsage: "<id> <first_name> <last_name> <email> <phone>",
+	},
+	{
+		Name:      "delete",
+		Aliases:   []string{"d"},
+		Usage:     "Delete a contact",
+		Action:    DeleteContact,
+		ArgsUsage: "<id>",
+	},
+	{
+		Name:      "link-address",
+		Aliases:   []string{"la"},
+		Usage:     "Associate an address to a contact",
+		Action:    AddAddressToContact,
+		ArgsUsage: "<contact_id> <address_id>",
+	},
+	{
+		Name:      "unlink-address",
+		Aliases:   []string{"ua"},
+		Usage:     "Remove an address from a contact",
+		Action:    RemoveAddressFromContact,
+		ArgsUsage: "<contact_id> <address_id>",
+	},
+}
+
 type Contact struct {
 	gorm.Model
 	FirstName string

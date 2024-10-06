@@ -9,6 +9,43 @@ import (
 	"ryangurnick.com/accountant/data"
 )
 
+var AddressSubcommands = []*cli.Command{
+	{
+		Name:      "create",
+		Aliases:   []string{"c"},
+		Usage:     "Create a new address",
+		Action:    CreateAddress,
+		ArgsUsage: "<number> <street> <unit> <city> <state> <zip>",
+	},
+	{
+		Name:      "read",
+		Aliases:   []string{"r"},
+		Usage:     "Read an address",
+		Action:    ReadAddress,
+		ArgsUsage: "<id>",
+	},
+	{
+		Name:    "list",
+		Aliases: []string{"l"},
+		Usage:   "List all addresses",
+		Action:  ListAddresses,
+	},
+	{
+		Name:      "update",
+		Aliases:   []string{"u"},
+		Usage:     "Update an address",
+		Action:    UpdateAddress,
+		ArgsUsage: "<id> <number> <street> <unit> <city> <state> <zip>",
+	},
+	{
+		Name:      "delete",
+		Aliases:   []string{"d"},
+		Usage:     "Delete an address",
+		Action:    DeleteAddress,
+		ArgsUsage: "<id>",
+	},
+}
+
 type Address struct {
 	gorm.Model
 	Number   string
