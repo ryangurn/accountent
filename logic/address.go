@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
@@ -10,12 +11,14 @@ import (
 
 type Address struct {
 	gorm.Model
-	Number string
-	Street string
-	Unit   string
-	City   string
-	State  string
-	Zip    string
+	Number   string
+	Street   string
+	Unit     string
+	City     string
+	State    string
+	Zip      string
+	Clients  []*Client  `gorm:"many2many:client_addresses;"`
+	Contacts []*Contact `gorm:"many2many:contact_addresses;"`
 }
 
 func (a Address) ToString() string {
@@ -76,7 +79,7 @@ func ReadAddress(c *cli.Context) error {
 	}
 
 	var address Address
-	tx := db.First(&address, c.Args().Get(0))
+	tx := db.Preload("Clients").Preload("Contacts").First(&address, c.Args().Get(0))
 	if tx.RowsAffected == 0 || tx.Error != nil {
 		return fmt.Errorf("address not found")
 	}
@@ -92,6 +95,16 @@ func ReadAddress(c *cli.Context) error {
 	}
 
 	t := data.CreateKeyValueTable(c, items)
+	// clients
+	for _, client := range address.Clients {
+		t.AppendRow([]interface{}{fmt.Sprintf("Client #%d", client.ID), client.ToString()})
+	}
+
+	// contacts
+	for _, contact := range address.Contacts {
+		t.AppendRow([]interface{}{fmt.Sprintf("Contact #%d", contact.ID), contact.ToString()})
+	}
+
 	t.AppendFooter(table.Row{"Found", ""})
 	t.Render()
 	return nil
@@ -136,13 +149,6 @@ func UpdateAddress(c *cli.Context) error {
 		return fmt.Errorf("address not found")
 	}
 
-	address.Number = c.Args().Get(1)
-	address.Street = c.Args().Get(2)
-	address.Unit = c.Args().Get(3)
-	address.City = c.Args().Get(4)
-	address.State = c.Args().Get(5)
-	address.Zip = c.Args().Get(6)
-
 	t := data.CreateTable(c, table.Row{"Key", "Existing", "New"}, []table.Row{
 		{"Number", address.Number, c.Args().Get(1)},
 		{"Street", address.Street, c.Args().Get(2)},
@@ -151,6 +157,13 @@ func UpdateAddress(c *cli.Context) error {
 		{"State", address.State, c.Args().Get(5)},
 		{"Zip", address.Zip, c.Args().Get(6)},
 	})
+
+	address.Number = c.Args().Get(1)
+	address.Street = c.Args().Get(2)
+	address.Unit = c.Args().Get(3)
+	address.City = c.Args().Get(4)
+	address.State = c.Args().Get(5)
+	address.Zip = c.Args().Get(6)
 
 	tx = db.Save(&address)
 	if tx.RowsAffected == 1 {
