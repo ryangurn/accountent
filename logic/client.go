@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
@@ -116,11 +117,11 @@ func UpdateClient(c *cli.Context) error {
 		return fmt.Errorf("client not found")
 	}
 
-	client.Name = c.Args().Get(1)
-
 	t := data.CreateTable(c, table.Row{"Key", "Existing", "New"}, []table.Row{
 		{"Name", client.Name, c.Args().Get(1)},
 	})
+
+	client.Name = c.Args().Get(1)
 
 	tx = db.Save(&client)
 	if tx.RowsAffected == 1 {
