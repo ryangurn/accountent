@@ -9,7 +9,7 @@ on:
 jobs:
 
   build:
-    name: Build (Go)
+    name: Build (go)
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
