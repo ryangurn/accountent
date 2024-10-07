@@ -4,8 +4,9 @@ Accountant will start out as a cli tool for managing business expenses, focusing
 
 # objectives
 * crm (planning)
-    * contacts
-    * companies
+    * contacts (scaffolded)
+       * addresses (scaffolded)
+    * clients (scaffolded)
     * projects
     * tasks
     * notes
