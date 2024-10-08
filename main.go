@@ -20,7 +20,7 @@ func main() {
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&logic.Address{}, &logic.Contact{}, &logic.Client{})
+	db.AutoMigrate(&logic.Setting{}, &logic.Address{}, &logic.Contact{}, &logic.Client{})
 
 	app := &cli.App{
 		EnableBashCompletion: true,
@@ -45,6 +45,12 @@ func main() {
 				Aliases:     []string{"cl"},
 				Usage:       "Manage your clients",
 				Subcommands: logic.ClientSubcommands,
+			},
+			{
+				Name:        "settings",
+				Aliases:     []string{"s"},
+				Usage:       "Manage your settings",
+				Subcommands: logic.SettingSubcommands,
 			},
 		},
 	}
