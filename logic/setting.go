@@ -37,6 +37,12 @@ var SettingSubcommands = []*cli.Command{
 		Action:    UpdateSetting,
 		ArgsUsage: "<namespace> <key> <newValue>",
 	},
+	{
+		Name:    "populate-missing",
+		Aliases: []string{"pm"},
+		Usage:   "Add missing settings, will not replace any existing values",
+		Action:  AddMissingSettings,
+	},
 }
 
 type Setting struct {
@@ -46,33 +52,32 @@ type Setting struct {
 	Value     string
 }
 
+var defaults = []Setting{
+	// business basic info
+	{Namespace: "business", Key: "name", Value: "Business Name"},
+	{Namespace: "business", Key: "phone", Value: "(555) 555-5555"},
+	{Namespace: "business", Key: "email", Value: "example@email.com"},
+	{Namespace: "business", Key: "address_number", Value: "1234"},
+	{Namespace: "business", Key: "address_street", Value: "Main St"},
+	{Namespace: "business", Key: "address_unit", Value: "Suite 101"},
+	{Namespace: "business", Key: "address_city", Value: "Portland"},
+	{Namespace: "business", Key: "address_state", Value: "Oregon"},
+	{Namespace: "business", Key: "address_zip", Value: "97217"},
+	{Namespace: "business", Key: "address_country", Value: "United States"},
+	{Namespace: "business", Key: "timezone", Value: "America/Los_Angeles"},
+
+	// tax and financial information
+	{Namespace: "financial", Key: "currency", Value: "USD"},
+	{Namespace: "financial", Key: "year_end_month", Value: "12"},
+	{Namespace: "financial", Key: "year_end_day", Value: "31"},
+	{Namespace: "financial", Key: "standard_rate", Value: "50.00"},
+}
+
 func (s Setting) ToString() string {
 	return strings.ToLower(s.Namespace) + "." + strings.ToLower(s.Key)
 }
 
 func SetupSettings(c *cli.Context) error {
-	// build defaults
-	var defaults = []Setting{
-		// business basic info
-		{Namespace: "business", Key: "name", Value: "Business Name"},
-		{Namespace: "business", Key: "phone", Value: "(555) 555-5555"},
-		{Namespace: "business", Key: "email", Value: "example@email.com"},
-		{Namespace: "business", Key: "address_number", Value: "1234"},
-		{Namespace: "business", Key: "address_street", Value: "Main St"},
-		{Namespace: "business", Key: "address_unit", Value: "Suite 101"},
-		{Namespace: "business", Key: "address_city", Value: "Portland"},
-		{Namespace: "business", Key: "address_state", Value: "Oregon"},
-		{Namespace: "business", Key: "address_zip", Value: "97217"},
-		{Namespace: "business", Key: "address_country", Value: "United States"},
-		{Namespace: "business", Key: "timezone", Value: "America/Los_Angeles"},
-
-		// tax and financial information
-		{Namespace: "financial", Key: "currency", Value: "USD"},
-		{Namespace: "financial", Key: "year_end_month", Value: "12"},
-		{Namespace: "financial", Key: "year_end_day", Value: "31"},
-		{Namespace: "financial", Key: "standard_rate", Value: "50.00"},
-	}
-
 	// open connection
 	force := c.Bool("force")
 	db, err := data.OpenConnection()
@@ -97,6 +102,37 @@ func SetupSettings(c *cli.Context) error {
 	for _, setting := range defaults {
 		db.Create(&setting)
 	}
+
+	return nil
+}
+
+func AddMissingSettings(c *cli.Context) error {
+	items := []table.Row{}
+	for _, setting := range defaults {
+		// open connection
+		db, err := data.OpenConnection()
+		if err != nil {
+			return err
+		}
+
+		// check if setting exists
+		var count int64
+		db.Table("settings").Where("namespace = ? AND key = ?", setting.Namespace, setting.Key).Count(&count)
+
+		if count == 0 {
+			tx := db.Create(&setting)
+			if tx.RowsAffected == 0 {
+				items = append(items, table.Row{setting.Namespace, setting.Key, "created"})
+			} else {
+				items = append(items, table.Row{setting.Namespace, setting.Key, "error"})
+			}
+		} else {
+			items = append(items, table.Row{setting.Namespace, setting.Key, "exists"})
+		}
+	}
+
+	t := data.CreateTable(c, table.Row{"Namespace", "Key", "Status"}, items)
+	t.Render()
 
 	return nil
 }
