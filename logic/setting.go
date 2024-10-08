@@ -1,7 +1,9 @@
 package logic
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -42,6 +44,13 @@ var SettingSubcommands = []*cli.Command{
 		Aliases: []string{"pm"},
 		Usage:   "Add missing settings, will not replace any existing values",
 		Action:  AddMissingSettings,
+	},
+	{
+		Name:      "export",
+		Aliases:   []string{"e"},
+		Usage:     "Export settings to a file",
+		Action:    ExportSettings,
+		ArgsUsage: "<filename>",
 	},
 }
 
@@ -195,6 +204,33 @@ func UpdateSetting(c *cli.Context) error {
 		t.AppendFooter(table.Row{"Unable to save", "", ""})
 		t.Render()
 	}
+
+	return nil
+}
+
+func ExportSettings(c *cli.Context) error {
+	if c.NArg() != 1 {
+		return fmt.Errorf("incorrect number of arguments: " + c.Command.ArgsUsage)
+	}
+
+	db, err := data.OpenConnection()
+	if err != nil {
+		return err
+	}
+
+	var settings []Setting
+	db.Find(&settings)
+
+	bytee, err := json.MarshalIndent(settings, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	if os.Stat(c.Args().Get(0)); os.IsExist(err) {
+		return fmt.Errorf("file already exists: " + c.Args().Get(0))
+	}
+
+	os.WriteFile(c.Args().Get(0), bytee, 0644)
 
 	return nil
 }
