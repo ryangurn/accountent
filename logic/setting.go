@@ -130,7 +130,7 @@ func AddMissingSettings(c *cli.Context) error {
 
 		if count == 0 {
 			tx := db.Create(&setting)
-			if tx.RowsAffected == 0 {
+			if tx.RowsAffected == 1 {
 				items = append(items, table.Row{setting.Namespace, setting.Key, "created"})
 			} else {
 				items = append(items, table.Row{setting.Namespace, setting.Key, "error"})
