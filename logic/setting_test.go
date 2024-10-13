@@ -131,5 +131,89 @@ func TestAddMissingSettings_Exists(t *testing.T) {
 	assert.Nil(t, err, "Error should be nil")
 	assert.Contains(t, output, "exists")
 	assert.NotContains(t, output, "created")
+}
 
+func TestListSettings(t *testing.T) {
+	suite := setupSuite(t)
+	defer suite(t)
+
+	app := cli.App{}
+	app.Commands = SettingSubcommands
+	output, err := data.CaptureOutput(func() error {
+		err := app.Run([]string{"setting", "list"})
+		return err
+	})
+
+	assert.NotNil(t, err, "no settings found, consider running setup")
+	assert.Emptyf(t, output, "output should ")
+}
+
+func TestListSettings_WithData(t *testing.T) {
+	suite := setupSuite(t)
+	defer suite(t)
+
+	app := cli.App{}
+	app.Commands = SettingSubcommands
+	output, err := data.CaptureOutput(func() error {
+		app.Run([]string{"setting", "setup", "--force"})
+
+		err := app.Run([]string{"setting", "list"})
+		return err
+	})
+
+	assert.Nil(t, err, "no settings found, consider running setup")
+	assert.NotEmpty(t, output, "output should contain settings list")
+}
+
+func TestUpdateSetting(t *testing.T) {
+	suite := setupSuite(t)
+	defer suite(t)
+
+	app := cli.App{}
+	app.Commands = SettingSubcommands
+	output, err := data.CaptureOutput(func() error {
+		app.Run([]string{"setting", "setup", "--force"})
+
+		err := app.Run([]string{"setting", "update", "business", "name", "Test"})
+		return err
+	})
+
+	assert.Nil(t, err, "no settings found, consider running setup")
+	assert.Contains(t, output, "Test")
+	assert.Contains(t, output, "SAVED")
+	assert.NotContains(t, output, "UNABLE TO SAVE")
+}
+
+func TestUpdateSetting_Failed(t *testing.T) {
+	suite := setupSuite(t)
+	defer suite(t)
+
+	app := cli.App{}
+	app.Commands = SettingSubcommands
+	output, err := data.CaptureOutput(func() error {
+		app.Run([]string{"setting", "setup", "--force"})
+
+		err := app.Run([]string{"setting", "update", "business", "invalid_KEY_123", "Test"})
+		return err
+	})
+
+	assert.NotNil(t, err, "setting not found")
+	assert.Empty(t, output, "output should be empty")
+}
+
+func TestExportSettings(t *testing.T) {
+	suite := setupSuite(t)
+	defer suite(t)
+
+	app := cli.App{}
+	app.Commands = SettingSubcommands
+	output, err := data.CaptureOutput(func() error {
+		app.Run([]string{"setting", "setup", "--force"})
+
+		err := app.Run([]string{"setting", "export", "export.json"})
+		return err
+	})
+
+	assert.Nil(t, err, "no settings found, consider running setup")
+	assert.Empty(t, output, "output is not expected")
 }
