@@ -26,6 +26,7 @@ go.work.sum
 
 # data
 *.data
+*.json
 
 # idea
 .idea
